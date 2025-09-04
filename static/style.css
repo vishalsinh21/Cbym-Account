@@ -7,13 +7,13 @@ body {
 }
 
 .login-container, .dashboard-container, .public-container {
-    width: 90%;
+    width: 95%;
     max-width: 900px;
-    margin: 30px auto;
-    padding: 20px;
+    margin: 20px auto;
+    padding: 25px;
     background: #1e1e1e;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
 }
 
 /* Dashboard header */
@@ -27,37 +27,41 @@ body {
 .dashboard-header h1 {
     margin: 0;
     color: #00bfff;
+    font-size: 26px;
 }
 
-.header-buttons a {
+.header-buttons a, .header-buttons button {
     text-decoration: none;
     margin-left: 10px;
+    font-size: 16px;
+    padding: 10px 16px;
+    border-radius: 6px;
 }
 
 .header-buttons button {
-    padding: 6px 12px;
-    font-size: 14px;
-    border-radius: 5px;
     border: none;
     cursor: pointer;
     transition: 0.3s;
+    background: #00bfff;
+    color: #fff;
 }
 
 .header-buttons button:hover {
-    opacity: 0.8;
+    background: #009acd;
+    opacity: 0.9;
 }
 
 input, select, button {
-    margin: 5px;
-    padding: 8px;
-    border-radius: 5px;
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 6px;
     border: none;
     outline: none;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 input, select {
-    width: calc(100% - 20px);
+    width: 100%;
 }
 
 button {
@@ -83,13 +87,14 @@ button[name="delete_expense"]:hover, button[name="delete"]:hover {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 table, th, td {
     border: 1px solid #555;
-    padding: 8px;
+    padding: 12px;
     text-align: center;
+    font-size: 16px;
 }
 
 tr:hover {
@@ -98,8 +103,8 @@ tr:hover {
 }
 
 .summary p {
-    font-size: 18px;
-    margin: 5px 0;
+    font-size: 20px;
+    margin: 8px 0;
 }
 
 .error {
@@ -108,19 +113,59 @@ tr:hover {
 }
 
 /* Mobile responsive */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 768px) {
     input, select, button {
+        font-size: 18px;
+        padding: 14px;
+    }
+
+    table, th, td {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .header-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .header-buttons a, .header-buttons button {
+        margin: 5px 5px 0 0;
+        width: 48%;
+    }
+
+    .summary p {
+        font-size: 18px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .dashboard-header h1 {
+        font-size: 22px;
+    }
+
+    .header-buttons a, .header-buttons button {
         width: 100%;
         margin: 5px 0;
     }
+
     table, th, td {
-        font-size: 12px;
+        font-size: 13px;
+        padding: 8px;
     }
-    .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
+
+    input, select, button {
+        font-size: 16px;
+        padding: 12px;
     }
-    .header-buttons {
-        margin-top: 10px;
+
+    .summary p {
+        font-size: 16px;
     }
 }
