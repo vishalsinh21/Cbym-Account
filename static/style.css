@@ -6,6 +6,7 @@ body {
     padding: 0;
 }
 
+/* Containers */
 .login-container, .dashboard-container, .public-container {
     width: 95%;
     max-width: 900px;
@@ -84,17 +85,23 @@ button[name="delete_expense"]:hover, button[name="delete"]:hover {
     background: #cc0000;
 }
 
+/* Tables */
+.table-wrapper {
+    overflow-x: auto; /* Horizontal scroll on mobile */
+    -webkit-overflow-scrolling: touch; /* Smooth scroll for iOS */
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    font-size: 16px;
 }
 
 table, th, td {
     border: 1px solid #555;
     padding: 12px;
     text-align: center;
-    font-size: 16px;
 }
 
 tr:hover {
@@ -102,6 +109,7 @@ tr:hover {
     cursor: pointer;
 }
 
+/* Summary & errors */
 .summary p {
     font-size: 20px;
     margin: 8px 0;
@@ -114,6 +122,10 @@ tr:hover {
 
 /* Mobile responsive */
 @media screen and (max-width: 768px) {
+    body {
+        font-size: 18px; /* bigger content */
+    }
+
     input, select, button {
         font-size: 18px;
         padding: 14px;
@@ -146,6 +158,10 @@ tr:hover {
 }
 
 @media screen and (max-width: 480px) {
+    body {
+        font-size: 20px; /* bigger content for small screens */
+    }
+
     .dashboard-header h1 {
         font-size: 22px;
     }
@@ -156,8 +172,8 @@ tr:hover {
     }
 
     table, th, td {
-        font-size: 13px;
-        padding: 8px;
+        font-size: 12px; /* smaller table text */
+        padding: 6px; /* smaller padding */
     }
 
     input, select, button {
