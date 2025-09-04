@@ -92,14 +92,14 @@ button[name="delete_expense"]:hover, button[name="delete"]:hover {
 }
 
 table {
-    width: 50%;
+    width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    font-size: 30px;
+    font-size: 50px;
 }
 
 table, th, td {
-    border: 1px solid #555;
+    border: 2px solid #f2eeee;
     padding: 12px;
     text-align: center;
 }
