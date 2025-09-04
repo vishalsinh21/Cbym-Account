@@ -1,0 +1,126 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+.login-container, .dashboard-container, .public-container {
+    width: 90%;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+/* Dashboard header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    color: #00bfff;
+}
+
+.header-buttons a {
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+.header-buttons button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.header-buttons button:hover {
+    opacity: 0.8;
+}
+
+input, select, button {
+    margin: 5px;
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+input, select {
+    width: calc(100% - 20px);
+}
+
+button {
+    background: #00bfff;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #009acd;
+}
+
+/* Specific style for delete buttons */
+button[name="delete_expense"], button[name="delete"] {
+    background: #ff4d4d;
+}
+
+button[name="delete_expense"]:hover, button[name="delete"]:hover {
+    background: #cc0000;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table, th, td {
+    border: 1px solid #555;
+    padding: 8px;
+    text-align: center;
+}
+
+tr:hover {
+    background: #333;
+    cursor: pointer;
+}
+
+.summary p {
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+/* Mobile responsive */
+@media screen and (max-width: 600px) {
+    input, select, button {
+        width: 100%;
+        margin: 5px 0;
+    }
+    table, th, td {
+        font-size: 12px;
+    }
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .header-buttons {
+        margin-top: 10px;
+    }
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ચતુર્ભુજ યુવક મંડળ એકાઉન્ટ માહિતી</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="public-container">
+    <h1>ચતુર્ભુજ યુવક મંડળ એકાઉન્ટ માહિતી</h1>
+
+    <div class="summary">
+        <p>કુલ આવેલ દાન: ${{ total_donations }}</p>
+        <p>કુલ ખર્ચ: ${{ total_expenses }}</p>
+        <p style="color: green;">બાકી રહેલ રકમ: ${{ available_balance }}</p>
+
+    </div>
+
+    <h2>દાતાઓ</h2>
+    <table>
+        <tr><th>ID</th><th>Name</th><th>Amount</th><th>Payment</th></tr>
+        {% for c in contributors %}
+        <tr>
+            <td>{{ c[0] }}</td><td>{{ c[1] }}</td><td>{{ c[3] }}</td><td>{{ c[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>ખર્ચ</h2>
+    <table>
+        <tr><th>ID</th><th>Title</th><th>Amount</th></tr>
+        {% for e in expenses %}
+        <tr>
+            <td>{{ e[0] }}</td><td>{{ e[1] }}</td><td>{{ e[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+</body>
+</html>
