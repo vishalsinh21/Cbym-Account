@@ -1,10 +1,10 @@
-# init_db.py
 import os
-from app import init_db  # Make sure init_db() is defined in app.py
+import psycopg2
+from urllib.parse import urlparse
+from app import init_db  # import the function from app.py
+
+os.environ["DATABASE_URL"] = "postgres://cbym_account_user:Mu1ZKfWPcET3LMXDGIZPhu39tRd71AMX@dpg-d2t5tkje5dus73dgu1b0-a/cbym_account"
 
 if __name__ == "__main__":
-    # Optional: Set environment variable if using DATABASE_URL from Render
-    # os.environ["DATABASE_URL"] = "postgres://user:pass@host:port/dbname"
-
     init_db()
     print("Database initialized successfully!")

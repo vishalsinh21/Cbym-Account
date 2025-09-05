@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = "secret_key"
 
 # ---------- Database connection ----------
-DATABASE_URL = os.environ.get("DATABASE_URL")  # Example: postgres://user:pass@host:port/dbname
+DATABASE_URL = os.environ.get("DATABASE_URL")  # Set this in Render environment variables
 
 def get_db_connection():
     result = urlparse(DATABASE_URL)
@@ -24,51 +24,6 @@ def get_db_connection():
         port=port
     )
     return conn
-
-# ---------- Initialize DB ----------
-def init_db():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    # Users table
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users(
-            id SERIAL PRIMARY KEY,
-            username TEXT UNIQUE,
-            password TEXT
-        )
-    """)
-    
-    # Contributors table
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS contributors(
-            id SERIAL PRIMARY KEY,
-            name TEXT,
-            email TEXT,
-            amount REAL,
-            payment_method TEXT
-        )
-    """)
-    
-    # Expenses table
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS expenses(
-            id SERIAL PRIMARY KEY,
-            title TEXT,
-            amount REAL
-        )
-    """)
-    
-    # Add default admin if missing
-    cursor.execute("SELECT * FROM users WHERE username='admin'")
-    if not cursor.fetchone():
-        cursor.execute("INSERT INTO users(username,password) VALUES('admin','admin')")
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-init_db()
 
 # ---------- Routes ----------
 
