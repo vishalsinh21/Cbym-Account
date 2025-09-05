@@ -1,39 +1,63 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-import sqlite3
+import psycopg2
 import os
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 app.secret_key = "secret_key"
 
-DB_NAME = "database.db"
+# ---------- Database connection ----------
+DATABASE_URL = os.environ.get("DATABASE_URL")  # Example: postgres://user:pass@host:port/dbname
+
+def get_db_connection():
+    result = urlparse(DATABASE_URL)
+    username = result.username
+    password = result.password
+    database = result.path[1:]
+    hostname = result.hostname
+    port = result.port
+    conn = psycopg2.connect(
+        dbname=database,
+        user=username,
+        password=password,
+        host=hostname,
+        port=port
+    )
+    return conn
 
 # ---------- Initialize DB ----------
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_db_connection()
     cursor = conn.cursor()
     
     # Users table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS users(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        password TEXT
-    )""")
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users(
+            id SERIAL PRIMARY KEY,
+            username TEXT UNIQUE,
+            password TEXT
+        )
+    """)
     
     # Contributors table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS contributors(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        email TEXT,
-        amount REAL,
-        payment_method TEXT
-    )""")
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS contributors(
+            id SERIAL PRIMARY KEY,
+            name TEXT,
+            email TEXT,
+            amount REAL,
+            payment_method TEXT
+        )
+    """)
     
     # Expenses table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS expenses(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        amount REAL
-    )""")
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS expenses(
+            id SERIAL PRIMARY KEY,
+            title TEXT,
+            amount REAL
+        )
+    """)
     
     # Add default admin if missing
     cursor.execute("SELECT * FROM users WHERE username='admin'")
@@ -41,6 +65,7 @@ def init_db():
         cursor.execute("INSERT INTO users(username,password) VALUES('admin','admin')")
     
     conn.commit()
+    cursor.close()
     conn.close()
 
 init_db()
@@ -53,10 +78,11 @@ def login():
     if request.method == "POST":
         username = request.form["username"].strip()
         password = request.form["password"].strip()
-        conn = sqlite3.connect(DB_NAME)
+        conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username,password))
+        cursor.execute("SELECT * FROM users WHERE username=%s AND password=%s", (username,password))
         user = cursor.fetchone()
+        cursor.close()
         conn.close()
         if user:
             session["username"] = username
@@ -84,18 +110,18 @@ def change_password():
         if new_pass != confirm_pass:
             flash("New passwords do not match")
         else:
-            conn = sqlite3.connect(DB_NAME)
+            conn = get_db_connection()
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (session["username"], old_pass))
+            cursor.execute("SELECT * FROM users WHERE username=%s AND password=%s", (session["username"], old_pass))
             user = cursor.fetchone()
             if user:
-                cursor.execute("UPDATE users SET password=? WHERE username=?", (new_pass, session["username"]))
+                cursor.execute("UPDATE users SET password=%s WHERE username=%s", (new_pass, session["username"]))
                 conn.commit()
-                conn.close()
                 flash("Password changed successfully")
             else:
-                conn.close()
                 flash("Old password is incorrect")
+            cursor.close()
+            conn.close()
     return render_template("change_password.html")
 
 # Dashboard
@@ -104,7 +130,7 @@ def dashboard():
     if "username" not in session:
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     if request.method == "POST":
@@ -117,8 +143,10 @@ def dashboard():
             except:
                 amount = 0
             payment = request.form["payment"]
-            cursor.execute("INSERT INTO contributors(name,email,amount,payment_method) VALUES(?,?,?,?)",
-                           (name,email,amount,payment))
+            cursor.execute(
+                "INSERT INTO contributors(name,email,amount,payment_method) VALUES(%s,%s,%s,%s)",
+                (name,email,amount,payment)
+            )
             conn.commit()
         elif "edit" in request.form:
             cid = request.form["id"]
@@ -129,12 +157,14 @@ def dashboard():
             except:
                 amount = 0
             payment = request.form["payment"]
-            cursor.execute("UPDATE contributors SET name=?, email=?, amount=?, payment_method=? WHERE id=?",
-                           (name,email,amount,payment,cid))
+            cursor.execute(
+                "UPDATE contributors SET name=%s, email=%s, amount=%s, payment_method=%s WHERE id=%s",
+                (name,email,amount,payment,cid)
+            )
             conn.commit()
         elif "delete" in request.form:
             cid = request.form["id"]
-            cursor.execute("DELETE FROM contributors WHERE id=?", (cid,))
+            cursor.execute("DELETE FROM contributors WHERE id=%s", (cid,))
             conn.commit()
 
         # Expenses actions
@@ -144,11 +174,11 @@ def dashboard():
                 amount = float(request.form["expense_amount"])
             except:
                 amount = 0
-            cursor.execute("INSERT INTO expenses(title,amount) VALUES(?,?)", (title, amount))
+            cursor.execute("INSERT INTO expenses(title,amount) VALUES(%s,%s)", (title, amount))
             conn.commit()
         elif "delete_expense" in request.form:
             exp_id = request.form["expense_id"]
-            cursor.execute("DELETE FROM expenses WHERE id=?", (exp_id,))
+            cursor.execute("DELETE FROM expenses WHERE id=%s", (exp_id,))
             conn.commit()
 
     # Fetch contributors
@@ -162,6 +192,7 @@ def dashboard():
     total_expenses = sum([row[2] for row in expenses])
 
     available_balance = total_donations - total_expenses
+    cursor.close()
     conn.close()
 
     return render_template("dashboard.html",
@@ -174,7 +205,7 @@ def dashboard():
 # Public view
 @app.route("/public")
 def public_view():
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM contributors")
     contributors = cursor.fetchall()
@@ -183,6 +214,7 @@ def public_view():
     total_donations = sum([row[3] for row in contributors])
     total_expenses = sum([row[2] for row in expenses])
     available_balance = total_donations - total_expenses
+    cursor.close()
     conn.close()
     return render_template("public.html",
                            contributors=contributors,
